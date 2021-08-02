@@ -23,6 +23,10 @@ import Room from './screens/Room';
 import CustomNavigationBar from './components/CustomNavigationBar';
 import {RootStackParamList} from './types/NavigatorTypes';
 
+import {enableScreens} from 'react-native-screens';
+
+enableScreens();
+
 const primary = '#F53E2A';
 const accent = '#A444FC';
 

@@ -16,6 +16,8 @@ target 'WithURN' do
 
   pod 'RCTYouTube', :path => '../node_modules/react-native-youtube'
 
+  pod 'RNScreens', :path => '../node_modules/react-native-screens'
+
   target 'WithURNTests' do
     inherit! :complete
     # Pods for testing

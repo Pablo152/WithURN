@@ -1,11 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {StyleSheet, View, useWindowDimensions} from 'react-native';
 import {Text, useTheme} from 'react-native-paper';
 import YouTube from 'react-native-youtube';
 import BottomSheetBehavior from 'reanimated-bottom-sheet';
 import BottomSheet from 'reanimated-bottom-sheet';
 import {NativeEventEmitter} from 'react-native';
 import {RoomProps} from '../types/NavigatorTypes';
+import {ScrollView} from 'react-native-gesture-handler';
 
 // Takes a youtube url, parses it into a valid ID.
 function getYouTubeId(url: string): string {
@@ -17,6 +18,7 @@ export default function Room({route}: RoomProps): JSX.Element {
   const theme = useTheme();
   const [isChatOpened, setOpenedChat] = useState<boolean>(false);
   const ref = useRef<BottomSheetBehavior>(null);
+  const window = useWindowDimensions();
 
   const id = getYouTubeId(route.params.youtubeUrl);
 
@@ -41,15 +43,21 @@ export default function Room({route}: RoomProps): JSX.Element {
   }, [isChatOpened]);
 
   return (
-    <View>
-      <YouTube
-        videoId={id} // The YouTube video ID
-        apiKey="AIzaSyDbsPO5O1xuisa2ecDlTEs7wIIwtfS2wz0"
-        style={styles.youtubeFrame}
-      />
+    <>
+      <ScrollView style={styles.container}>
+        <YouTube
+          videoId={id} // The YouTube video ID
+          apiKey="AIzaSyDbsPO5O1xuisa2ecDlTEs7wIIwtfS2wz0"
+          style={{
+            height: window.height - 56,
+            width: window.width,
+            ...styles.youtubeFrame,
+          }}
+        />
+      </ScrollView>
       <BottomSheet
         ref={ref}
-        snapPoints={[450, 300, 0]}
+        snapPoints={['45%', '20%', 0]}
         initialSnap={2}
         borderRadius={20}
         onCloseEnd={() => setOpenedChat(false)}
@@ -63,14 +71,16 @@ export default function Room({route}: RoomProps): JSX.Element {
           </View>
         )}
       />
-    </View>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   youtubeFrame: {
     alignSelf: 'stretch',
-    height: Dimensions.get('window').height - 56.5,
   },
   bottomSheetContainer: {
     padding: 10,
