@@ -7,6 +7,9 @@ import BottomSheet from 'reanimated-bottom-sheet';
 import {NativeEventEmitter} from 'react-native';
 import {RoomProps} from '../types/NavigatorTypes';
 import {ScrollView} from 'react-native-gesture-handler';
+import Chat, {Message} from '../components/Chat';
+
+import {API_KEY} from 'react-native-dotenv';
 
 // Takes a youtube url, parses it into a valid ID.
 function getYouTubeId(url: string): string {
@@ -16,11 +19,13 @@ function getYouTubeId(url: string): string {
 
 export default function Room({route}: RoomProps): JSX.Element {
   const theme = useTheme();
-  const [isChatOpened, setOpenedChat] = useState<boolean>(false);
-  const ref = useRef<BottomSheetBehavior>(null);
   const window = useWindowDimensions();
-
   const id = getYouTubeId(route.params.youtubeUrl);
+
+  const ref = useRef<BottomSheetBehavior>(null);
+
+  const [isChatOpened, setOpenedChat] = useState<boolean>(false);
+  const [messages, setMessages] = useState<Message[]>([]);
 
   useEffect(() => {
     const emitter = new NativeEventEmitter();
@@ -34,7 +39,6 @@ export default function Room({route}: RoomProps): JSX.Element {
         ref.current?.snapTo(0);
       }
     });
-
     // Need to cleanup the event listener or you will end up with a bunch of them
     // everytime the state changes.
     return function cleanup() {
@@ -42,12 +46,29 @@ export default function Room({route}: RoomProps): JSX.Element {
     };
   }, [isChatOpened]);
 
+  useEffect(() => {
+    setMessages([
+      {
+        id: 1,
+        user: 'Pablo',
+        text: 'XDDD',
+        avatar: 123,
+        direction: 'in',
+        date: new Date(),
+      },
+    ]);
+  }, []);
+
+  const messageHandler = (message: Message) => {
+    setMessages([...messages, message]);
+  };
+
   return (
     <>
       <ScrollView style={styles.container}>
         <YouTube
           videoId={id} // The YouTube video ID
-          apiKey="AIzaSyDbsPO5O1xuisa2ecDlTEs7wIIwtfS2wz0"
+          apiKey={API_KEY}
           style={{
             height: window.height - 56,
             width: window.width,
@@ -59,15 +80,24 @@ export default function Room({route}: RoomProps): JSX.Element {
         ref={ref}
         snapPoints={['45%', '20%', 0]}
         initialSnap={2}
-        borderRadius={20}
         onCloseEnd={() => setOpenedChat(false)}
+        enabledHeaderGestureInteraction={true}
+        renderHeader={() => (
+          <View
+            style={{
+              backgroundColor: theme.colors.surface,
+              ...styles.bottomSheetHeader,
+            }}>
+            <Text style={styles.bottomSheetText}>Chat</Text>
+          </View>
+        )}
         renderContent={() => (
           <View
             style={{
               backgroundColor: theme.colors.surface,
-              ...styles.bottomSheetContainer,
+              ...styles.bottomSheetContent,
             }}>
-            <Text style={styles.bottomSheetText}>Chat</Text>
+            <Chat messages={messages} messageHandler={messageHandler} />
           </View>
         )}
       />
@@ -82,9 +112,14 @@ const styles = StyleSheet.create({
   youtubeFrame: {
     alignSelf: 'stretch',
   },
-  bottomSheetContainer: {
+  bottomSheetContent: {
+    height: '100%',
+  },
+  bottomSheetHeader: {
+    height: 60,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     padding: 10,
-    height: 450,
   },
   bottomSheetText: {
     fontSize: 30,
