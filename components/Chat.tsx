@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useState} from 'react';
 import {ImageSourcePropType} from 'react-native';
 import {StyleSheet} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
@@ -23,7 +23,6 @@ export default function Chat({
   messageHandler,
 }: ChatProps): JSX.Element {
   const [text, setText] = useState<string>('');
-  const flatRef = useRef<any>(null);
 
   const handlePress = () => {
     const message: Message = {
@@ -40,7 +39,6 @@ export default function Chat({
   return (
     <>
       <FlatList
-        ref={flatRef}
         contentContainerStyle={styles.flatListContainerStyle}
         style={styles.flatListChatStyle}
         ItemSeparatorComponent={() => <Divider />}
