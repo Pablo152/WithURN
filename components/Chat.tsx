@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {ImageSourcePropType} from 'react-native';
 import {StyleSheet} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {FlatList, ScrollView} from 'react-native-gesture-handler';
 import {Divider, List, TextInput} from 'react-native-paper';
 
 export type Message = {
@@ -23,6 +23,7 @@ export default function Chat({
   messageHandler,
 }: ChatProps): JSX.Element {
   const [text, setText] = useState<string>('');
+  const ref = useRef<ScrollView>(null);
 
   const handlePress = () => {
     const message: Message = {
@@ -34,44 +35,47 @@ export default function Chat({
       date: new Date(),
     };
     messageHandler(message);
+    ref.current?.scrollToEnd();
   };
 
   return (
     <>
-      <FlatList
-        contentContainerStyle={styles.flatListContainerStyle}
-        style={styles.flatListChatStyle}
-        ItemSeparatorComponent={() => <Divider />}
-        data={messages}
-        keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <List.Item
-            title={item.user}
-            description={item.text}
-            descriptionNumberOfLines={5}
-            titleStyle={
-              item.direction === 'in'
-                ? styles.commentBaseIn
-                : styles.commentBaseOut
-            }
-            descriptionStyle={
-              item.direction === 'in'
-                ? styles.commentBaseIn
-                : styles.commentBaseOut
-            }
-            left={
-              item.direction === 'in'
-                ? props => <List.Icon {...props} icon="account-circle" />
-                : undefined
-            }
-            right={
-              item.direction === 'out'
-                ? props => <List.Icon {...props} icon="account-circle" />
-                : undefined
-            }
-          />
-        )}
-      />
+      <ScrollView ref={ref}>
+        <FlatList
+          contentContainerStyle={styles.flatListContainerStyle}
+          scrollEnabled={false}
+          ItemSeparatorComponent={() => <Divider />}
+          data={messages}
+          keyExtractor={item => item.id}
+          renderItem={({item}) => (
+            <List.Item
+              title={item.user}
+              description={item.text}
+              descriptionNumberOfLines={5}
+              titleStyle={
+                item.direction === 'in'
+                  ? styles.commentBaseIn
+                  : styles.commentBaseOut
+              }
+              descriptionStyle={
+                item.direction === 'in'
+                  ? styles.commentBaseIn
+                  : styles.commentBaseOut
+              }
+              left={
+                item.direction === 'in'
+                  ? props => <List.Icon {...props} icon="account-circle" />
+                  : undefined
+              }
+              right={
+                item.direction === 'out'
+                  ? props => <List.Icon {...props} icon="account-circle" />
+                  : undefined
+              }
+            />
+          )}
+        />
+      </ScrollView>
       <TextInput
         multiline
         maxLength={20}
@@ -99,9 +103,5 @@ const styles = StyleSheet.create({
   },
   flatListContainerStyle: {
     paddingBottom: 20,
-  },
-  flatListChatStyle: {
-    display: 'flex',
-    flexDirection: 'column-reverse',
   },
 });

@@ -4,7 +4,7 @@ import {Button, Text, TextInput} from 'react-native-paper';
 import {HomeProps} from '../types/NavigatorTypes';
 
 export default function HomeScreen({navigation}: HomeProps) {
-  const [text, setText] = React.useState('');
+  const [text, setText] = React.useState<string>('');
 
   return (
     <View style={style.container}>

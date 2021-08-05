@@ -82,6 +82,8 @@ export default function Room({route}: RoomProps): JSX.Element {
         initialSnap={2}
         onCloseEnd={() => setOpenedChat(false)}
         enabledHeaderGestureInteraction={true}
+        enabledContentGestureInteraction={false}
+        enabledContentTapInteraction={false}
         renderHeader={() => (
           <View
             style={{
@@ -114,12 +116,14 @@ const styles = StyleSheet.create({
   },
   bottomSheetContent: {
     height: '100%',
+    opacity: 0.9,
   },
   bottomSheetHeader: {
     height: 60,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 10,
+    opacity: 0.9,
   },
   bottomSheetText: {
     fontSize: 30,
